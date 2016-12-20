@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+
+cp plugins/${1}.rb ~/.config/muzak/plugins/
