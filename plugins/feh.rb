@@ -12,7 +12,7 @@ module Muzak
 
       def initialize
         super
-        @feh_args = DEFAULT_FEH_ARGS + Shellwords.split(Config.plugin_feh)
+        @feh_args = DEFAULT_FEH_ARGS + Shellwords.split(Config.plugin_feh["feh_args"])
 
         if Config.art_geometry
           @feh_args << "--geometry"

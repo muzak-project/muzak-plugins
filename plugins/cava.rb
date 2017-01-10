@@ -7,7 +7,7 @@ module Muzak
 
       def initialize
         super
-        @term_args = Shellwords.split Config.plugin_cava
+        @term_args = Shellwords.split Config.plugin_cava["term_args"]
         @pid = nil
       end
 
