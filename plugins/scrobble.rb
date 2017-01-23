@@ -10,22 +10,52 @@ module Muzak
         super
         @username = Config.plugin_scrobble["username"]
         @password_hash = Config.plugin_scrobble["password_hash"]
+        @polling = Config.plugin_scrobble["polling"]
+      end
+
+      def instance_started(instance)
+        return unless @polling
+        @running = true
+        Thread.new { poll_now_playing instance }
+      end
+
+      def instance_quitting
+        return unless @polling
+        @running = false
       end
 
       def song_loaded(song)
-        if song.title.nil? || song.artist.nil?
-          debug "cowardly refusing to scrobble a song ('#{song.path}') with missing metadata"
-          return
-        end
+        # this should never happen, but guard against it just in case
+        # the user is dumb and enabled polling when their player supports
+        # events
+        return if @polling
 
         scrobble song
       end
 
       private
 
+      def poll_now_playing(instance)
+        cache_np = nil
+
+        while @running do
+          if instance.player.now_playing != cache_np
+            cache_np = instance.player.now_playing
+            scrobble cache_np
+          end
+
+          sleep 1
+        end
+      end
+
       def scrobble(song)
         if @username.nil? || @password_hash.nil?
           error "missing username or password"
+          return
+        end
+
+        if song.title.nil? || song.artist.nil?
+          debug "refusing to scrobble '#{song.path}' without metadata"
           return
         end
 
@@ -65,7 +95,6 @@ module Muzak
           }
 
           uri = URI(URI.encode(post_url))
-          # uri.query = URI.encode_www_form(request_params)
 
           resp = Net::HTTP.post_form(uri, request_params)
 
