@@ -5,6 +5,10 @@ module Muzak
     class Cava < StubPlugin
       include Utils
 
+      def self.available?
+        Utils.which?("cava")
+      end
+
       def initialize
         super
         @term_args = Shellwords.split Config.plugin_cava["term_args"]

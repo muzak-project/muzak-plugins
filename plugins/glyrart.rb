@@ -8,6 +8,10 @@ module Muzak
         "--auto-zoom",
       ]
 
+      def self.available?
+        Utils.which?("feh")
+      end
+
       def initialize
         super
         @feh_args = DEFAULT_FEH_ARGS + Config.plugin_glyrart["feh_args"]

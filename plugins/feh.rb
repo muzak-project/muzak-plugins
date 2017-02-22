@@ -10,6 +10,10 @@ module Muzak
         "--auto-zoom",
       ]
 
+      def self.available?
+        Utils.which?("feh")
+      end
+
       def initialize
         super
         @feh_args = DEFAULT_FEH_ARGS + Shellwords.split(Config.plugin_feh["feh_args"])
