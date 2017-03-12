@@ -30,6 +30,7 @@ module Muzak
         else
           debug "no local art found for '#{song.title}', querying glyr"
           query = Glyr.query(artist: song.artist, album: song.album)
+          query.timeout = Config.plugin_smartart["glyr-timeout"] || 2
           img_url = query&.cover_art&.first&.url rescue nil
           feh img_url
         end
